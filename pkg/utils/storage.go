@@ -2,22 +2,14 @@ package utils
 
 import (
 	"fmt"
-	"io"
 	"os"
 
+	"github.com/sayar/go-streaming/pkg/models"
 	storage_go "github.com/supabase-community/storage-go"
 )
 
-type AudioFile struct{
-	BucketId string
-	Folder string
-	Key string
-	Extension string
-	File io.Reader
-	MIMEType string
-}
 
-func UploadToSupabase(file *AudioFile) string {
+func UploadToSupabase(file *models.AudioFile) string {
 
 	storageClient := storage_go.NewClient(fmt.Sprintf("https://%s.supabase.co/storage/v1", os.Getenv("SUPABASE_PROJECT_REFERENCE_ID")), os.Getenv("SUPABASE_API_SECRET_KEY"), nil)
 
