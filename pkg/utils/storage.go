@@ -14,26 +14,28 @@ type AudioFile struct{
 	Key string
 	Extension string
 	File io.Reader
+	MIMEType string
 }
 
 func UploadToSupabase(file *AudioFile) string {
-
 
 	storageClient := storage_go.NewClient(fmt.Sprintf("https://%s.supabase.co/storage/v1", os.Getenv("SUPABASE_PROJECT_REFERENCE_ID")), os.Getenv("SUPABASE_API_SECRET_KEY"), nil)
 
 	
 
 	upsert:=true
+	contentType:=file.MIMEType
 
-	res, err := storageClient.UploadFile(file.BucketId, fmt.Sprintf("%s/%s.%s",file.Folder,file.Key, file.Extension), file.File, storage_go.FileOptions{
+	_, err := storageClient.UploadFile(file.BucketId, fmt.Sprintf("%s/%s%s",file.Folder,file.Key, file.Extension), file.File, storage_go.FileOptions{
 		Upsert: &upsert,
+		ContentType:&contentType,
 	})
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(res.Code)
+	fmt.Println(fmt.Sprintf("%s%s",file.Key, file.Extension))
 
-	return res.Key
+	return fmt.Sprintf("%s%s",file.Key, file.Extension)
 }
