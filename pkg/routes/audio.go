@@ -18,6 +18,7 @@ func AudioRoutes(app *fiber.App){
 		fmt.Println("Recieved file")
 		fmt.Println("Recieved file")
 		fileHeader, _:=c.FormFile("audioFile")
+		projectId :=c.FormValue("projectId")
 		fmt.Println(fileHeader.Filename)
 		file,_:=fileHeader.Open()
 		key,err:=uuid.NewV7()
@@ -31,6 +32,7 @@ func AudioRoutes(app *fiber.App){
 			Extension: path.Ext(fileHeader.Filename),
 			BucketId: "audio",
 			MIMEType: fileHeader.Header.Get("Content-Type"),
+			ProjectId: projectId,
 		}
 		utils.UploadToSupabase(&audioFile)
 		database.CreateAudioFile(config.DB, &audioFile)
@@ -42,7 +44,7 @@ func AudioRoutes(app *fiber.App){
 		key:=c.Params("key")
 		fileInfo,err:=database.GetFileInfo(key)
 		if err!=nil{
-			c.Status(500).JSON(&models.ErrorResponse{Message: "Could not find audio file in db"})
+			c.Status(500).JSON(&ErrorResponse{Message: "Could not find audio file in db"})
 		}
 		return c.JSON(fileInfo)
 	})
