@@ -35,19 +35,33 @@ type Organization struct{
 	Model
 	Name string
 	Projects []Project `gorm:"foreignKey:OwnerId;references:ID"`
+	Users []UserOrganization `gorm:"foreignKey:OrganizationId;references:ID"`
 	
 }
 
 type User struct{
 	Model
 	Name string
-	Email string
+	Email string `gorm:"unique"`
+	Password string
+	Sessions []Session `gorm:"foreignKey:UserId;references:ID"`
+	Organizations []UserOrganization `gorm:"foreignKey:UserId;references:ID"`
+}
+
+type Session struct{
+	Model
+	UserId string
+	Token string
+	ExpiresAt int64
+	User *User
 }
 
 type UserOrganization struct{
 	Model
 	UserId string
+	User *User
 	OrganizationId string
+	Organization *Organization
 	Role string
 }
 

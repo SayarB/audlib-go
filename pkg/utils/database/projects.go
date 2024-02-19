@@ -8,3 +8,9 @@ import (
 func CreateProject(project *models.Project) error {
 	return config.DB.Create(project).Error
 }
+
+func GetProjectById(id string) (*models.Project, error) {
+	project := &models.Project{}
+	err := config.DB.Where("id = ?", id).First(project).Error
+	return project, err
+}

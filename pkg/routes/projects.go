@@ -11,12 +11,7 @@ type PostProjectRequest struct{
 }
 
 func GetAuthenticatedUser(c *fiber.Ctx) (*models.User, error){
-	user:=&models.User{}
-	userId:=c.Locals("user").(string)
-	err:=database.GetUserById(userId, user)
-	if err!=nil{
-		return nil,err
-	}
+	user:=c.Locals("user").(*models.User)
 	return user,nil
 }
 

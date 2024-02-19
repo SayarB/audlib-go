@@ -15,10 +15,40 @@ import (
 
 func AudioRoutes(app *fiber.App){
 	app.Post("/audio", func(c *fiber.Ctx) error{
-		fmt.Println("Recieved file")
+
+		isAuthenticated:=c.Locals("isAuthenticated").(bool)
+		if !isAuthenticated{
+			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
+		}
+		user,err:=GetAuthenticatedUser(c)
+		if err!=nil{
+			fmt.Println("Cannot Authenticate User")
+			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
+		}
+		org, err:=GetCurrentOrganization(c)
+		if err!=nil{
+			fmt.Println("organization not found")
+			return c.Status(401).JSON(&ErrorResponse{Message: "Org not found"})
+		}
+
+		fmt.Print(user.Name)
+
 		fmt.Println("Recieved file")
 		fileHeader, _:=c.FormFile("audioFile")
 		projectId :=c.FormValue("projectId")
+
+		project, err:=database.GetProjectById(projectId)
+		if err!=nil{
+			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid Project ID"})
+		}
+
+		fmt.Println(project.OwnerId)
+		fmt.Println(org.ID)
+
+		if project.OwnerId!=org.ID{
+			return c.Status(401).JSON(&ErrorResponse{Message: "Project not in organization"})
+		}
+
 		fmt.Println(fileHeader.Filename)
 		file,_:=fileHeader.Open()
 		key,err:=uuid.NewV7()
@@ -43,6 +73,15 @@ func AudioRoutes(app *fiber.App){
 		fmt.Println("Recieved request for File: ", c.Params("key"))
 		key:=c.Params("key")
 		fileInfo,err:=database.GetFileInfo(key)
+
+		org:=c.Locals("organization").(*models.Organization)
+
+		if org.ID!=fileInfo.Project.OwnerId{
+			return c.Status(401).JSON(&ErrorResponse{Message: "Project is not owned by the organization"})
+		}
+
+		
+
 		if err!=nil{
 			c.Status(500).JSON(&ErrorResponse{Message: "Could not find audio file in db"})
 		}

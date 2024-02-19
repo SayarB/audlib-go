@@ -16,7 +16,7 @@ func CreateAudioFile(db *gorm.DB, audio *models.AudioFile) error {
 
 func GetFileInfo(key string) (*models.AudioFile,error){
 	fileInfo:=&models.AudioFile{}
-	db:=config.DB.Where("key = ?", key).First(fileInfo)
+	db:=config.DB.Where("key = ?", key).Preload("Project").First(fileInfo)
 	if db.Error!=nil{
 		return nil, db.Error
 	}
