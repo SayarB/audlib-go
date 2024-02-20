@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/sayar/go-streaming/pkg/models"
 	"github.com/sayar/go-streaming/pkg/utils/database"
@@ -46,5 +48,22 @@ func ProjectsRoutes(app *fiber.App){
 			return c.Status(500).JSON(&ErrorResponse{Message: "Error creating project"})
 		}
 		return c.Status(201).JSON(&projectObj)
+	})
+	app.Get("/projects", func(c *fiber.Ctx) error{
+		isAuth:=c.Locals("isAuthenticated").(bool)
+
+		if(isAuth==false){
+			fmt.Println("Not Authenticated")
+			return c.Status(401).JSON(&ErrorResponse{Message: "Not Authenticated"})
+		}
+		org, err:=GetCurrentOrganization(c)
+		if err!=nil{
+			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid Organization ID"})
+		}
+		projects,err:=database.GetProjectsByOrganizationId(org.ID)
+		if err!=nil{
+			return c.Status(500).JSON(&ErrorResponse{Message: "Error fetching projects"})
+		}
+		return c.JSON(&projects)
 	})
 }
