@@ -52,7 +52,7 @@ func ProjectsRoutes(app *fiber.App){
 	app.Get("/projects", func(c *fiber.Ctx) error{
 		isAuth:=c.Locals("isAuthenticated").(bool)
 
-		if(isAuth==false){
+		if !isAuth{
 			fmt.Println("Not Authenticated")
 			return c.Status(401).JSON(&ErrorResponse{Message: "Not Authenticated"})
 		}

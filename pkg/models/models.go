@@ -19,6 +19,7 @@ type AudioFile struct {
 	Key       string  `gorm:"primaryKey"`
 	Extension string 
 	File io.Reader `gorm:"-"`
+	Size      int64
 	MIMEType  string
 	ProjectId string
 	Project   *Project
