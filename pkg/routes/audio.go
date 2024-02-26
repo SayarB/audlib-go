@@ -20,7 +20,7 @@ import (
 	"github.com/sayar/go-streaming/pkg/utils/database"
 )
 
-const ChunkSize = 250*1000
+
 
 type StreamTokenResponse struct{
 	Token string `json:"token"`

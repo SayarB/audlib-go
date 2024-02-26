@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/sayar/go-streaming/pkg/models"
 )
 
 
@@ -12,9 +13,13 @@ var (
 	streamTokenSecret=[]byte(os.Getenv("STREAM_TOKEN_SECRET"))
 )
 
-func GenerateStreamToken(key string ) (string, error) {
+func GenerateStreamToken(fileInfo *models.AudioFile ) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"key": key,
+		"key": fileInfo.Key,
+		"mime": fileInfo.MIMEType,
+		"size":fileInfo.Size,
+		"bucket":fileInfo.BucketId,
+		"extension":fileInfo.Extension,
 		"exp":time.Now().Add(time.Hour).Unix(),
 	})
 	return token.SignedString(streamTokenSecret)

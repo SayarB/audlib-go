@@ -66,7 +66,13 @@ func UploadToS3(file *models.AudioFile) (string, error) {
 	return file.Key + file.Extension, err
 }
 
-func DownloadFileFromS3(file *models.AudioFile, chunkStart int, chunkEnd int ) (string, error) {
+type S3DownloadInput struct{
+	Key string
+	BucketId string
+	Extension string
+}
+
+func DownloadFileFromS3(file *S3DownloadInput, chunkStart int, chunkEnd int ) (string, error) {
 
 	fileName:=file.Key + file.Extension
 
