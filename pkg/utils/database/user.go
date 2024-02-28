@@ -10,7 +10,7 @@ func GetUserById(userId string, user *models.User) error {
 }
 
 func GetUserByEmail(email string, user *models.User) error {
-	return config.DB.Where("email = ?", email).First(user).Error
+	return config.DB.Preload("Organizations.Organization").Where("email = ?", email).First(user).Error
 }
 
 func CreateUser(user *models.User) error {

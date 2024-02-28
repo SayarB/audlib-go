@@ -21,10 +21,11 @@ func init() {
 
 func main() {
 	app := fiber.New(fiber.Config{DisablePreParseMultipartForm: true, StreamRequestBody: true})
-
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:    "*",
+		AllowOrigins:    "http://localhost:3000",
+		AllowCredentials: true,
 	}))
+
 	routes.SetupRoutes(app)
 	
 	log.Fatal(app.Listen(":8000"))

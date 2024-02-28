@@ -20,3 +20,7 @@ func CreateUserOrganization(userOrg *models.UserOrganization) error {
 func GetUserOrganization(userOrg *models.UserOrganization) error {
 	return config.DB.Where("user_id = ? AND organization_id = ?", userOrg.UserId, userOrg.OrganizationId).First(userOrg).Error
 }
+
+func GetOrganizationsForUser(userId string, orgs []models.UserOrganization) error{
+	return config.DB.Preload("Organization").Where("user_id = ?", userId).Find(&orgs).Error
+}

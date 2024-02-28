@@ -35,6 +35,7 @@ func AuthRoutes(app *fiber.App) {
 		body := LoginRequest{}
 		err:=c.BodyParser(&body)
 		if err!=nil{
+			fmt.Println(err)
 			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid request body"})
 		}
 
