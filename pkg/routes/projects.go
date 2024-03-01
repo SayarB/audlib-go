@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,6 +14,9 @@ type PostProjectRequest struct{
 }
 
 func GetAuthenticatedUser(c *fiber.Ctx) (*models.User, error){
+	if c.Locals("user")==nil{
+		return nil, errors.New("Cannot Get User")
+	}
 	user:=c.Locals("user").(*models.User)
 	return user,nil
 }

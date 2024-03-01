@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/sayar/go-streaming/pkg/config"
 	"github.com/sayar/go-streaming/pkg/models"
 )
@@ -21,6 +23,10 @@ func GetUserOrganization(userOrg *models.UserOrganization) error {
 	return config.DB.Where("user_id = ? AND organization_id = ?", userOrg.UserId, userOrg.OrganizationId).First(userOrg).Error
 }
 
-func GetOrganizationsForUser(userId string, orgs []models.UserOrganization) error{
-	return config.DB.Preload("Organization").Where("user_id = ?", userId).Find(&orgs).Error
+func GetOrganizationsForUser(userId string) ([]models.UserOrganization, error){
+	var orgs []models.UserOrganization
+	tx:=config.DB.Where("user_id = ?", userId).Preload("Organization").Find(&orgs)
+	fmt.Println(tx.RowsAffected)
+
+	return orgs, tx.Error
 }
