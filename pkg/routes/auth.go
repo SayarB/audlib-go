@@ -23,7 +23,7 @@ type RegisterRequest struct {
 
 func SetSessionCookie(c *fiber.Ctx, token string){
 	c.Cookie(&fiber.Cookie{
-		Name: "session",
+		Name: "audlib",
 		Value: token,
 		Expires: time.Now().Add(time.Hour * 24 * 3),
 	})
@@ -59,7 +59,7 @@ func AuthRoutes(app *fiber.App) {
 		}
 
 		// Create a session
-		token,err:=database.CreateSessionToken(user.ID)
+		token,err:=database.CreateSessionToken(user.ID,nil)
 	
 		if err!=nil{
 			return c.Status(500).JSON(&ErrorResponse{Message: "Error creating session"})
@@ -100,7 +100,7 @@ func AuthRoutes(app *fiber.App) {
 		if err!=nil{
 			return c.Status(500).JSON(&ErrorResponse{Message: "Error creating user"})
 		}
-		token,err:=database.CreateSessionToken(user.ID)
+		token,err:=database.CreateSessionToken(user.ID, nil)
 
 		if err!=nil{
 			return c.Status(500).JSON(&ErrorResponse{Message: "Error creating session"})

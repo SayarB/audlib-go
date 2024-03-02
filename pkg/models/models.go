@@ -37,7 +37,7 @@ type Organization struct{
 	Name string
 	Projects []Project `gorm:"foreignKey:OwnerId;references:ID"`
 	Users []UserOrganization `gorm:"foreignKey:OrganizationId;references:ID"`
-	
+	Sessions []Session `gorm:"foreignKey:OrganizationId;references:ID" `
 }
 
 type User struct{
@@ -54,6 +54,8 @@ type Session struct{
 	UserId string
 	Token string
 	ExpiresAt int64
+	OrganizationId *string
+	Organization *Organization 
 	User *User
 }
 

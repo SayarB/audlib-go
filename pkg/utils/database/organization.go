@@ -7,7 +7,7 @@ import (
 	"github.com/sayar/go-streaming/pkg/models"
 )
 
-func GetOrganizationById(orgId string, org *models.Organization) error {
+func GetOrganizationById(orgId *string, org *models.Organization) error {
 	return config.DB.Where("id = ?", orgId).First(org).Error
 }
 
@@ -29,4 +29,10 @@ func GetOrganizationsForUser(userId string) ([]models.UserOrganization, error){
 	fmt.Println(tx.RowsAffected)
 
 	return orgs, tx.Error
+}
+
+func ChangeOrganization(token string, orgId string) error{
+	tx:=config.DB.Table("sessions").Where("token = ?", token).Update("organization_id", orgId)
+
+	return tx.Error
 }
