@@ -61,7 +61,7 @@ func ProjectsRoutes(app *fiber.App){
 			return c.Status(401).JSON(&ErrorResponse{Message: "Not Authenticated"})
 		}
 		org, err:=GetCurrentOrganization(c)
-		if err!=nil{
+		if err!=nil || org==nil{
 			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid Organization ID"})
 		}
 		projects,err:=database.GetProjectsByOrganizationId(org.ID)

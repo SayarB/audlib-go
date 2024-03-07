@@ -59,9 +59,6 @@ func StreamRoutes(app *fiber.App){
 		mime:= claims["mime"].(string)
 		bucket:= claims["bucket"].(string)
 		size:= int(claims["size"].(float64))
-		if err!=nil{
-			return c.Status(500).JSON(&ErrorResponse{Message: "Cannot parse size from Token Claims"})
-		}
 		extension:= claims["extension"].(string)
 		
 

@@ -21,7 +21,7 @@ func OrganizationRoutes(app *fiber.App) {
 
 		var orgs []models.UserOrganization
 
-		orgs, err = database.GetOrganizationsForUser(user.ID)
+		orgs, err = database.GetUserOrganizationsForUser(user.ID)
 
 		if err!=nil{
 			return c.Status(500).JSON(&ErrorResponse{Message: "Error fetching organizations"})
@@ -32,25 +32,11 @@ func OrganizationRoutes(app *fiber.App) {
 		return c.JSON(orgs)
 	})
 	app.Get("/orgs/check", func(c *fiber.Ctx) error {
-		user, err:= GetAuthenticatedUser(c)
+		org, err:= GetCurrentOrganization(c)
 		if err!=nil{
-			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
+			return c.Status(400).JSON(&ErrorResponse{Message: "no organization selected"})
 		}
-
-		var orgs []models.UserOrganization
-
-		orgs, err = database.GetOrganizationsForUser(user.ID)
-
-		if err!=nil{
-			return c.Status(500).JSON(&ErrorResponse{Message: "Error fetching organizations"})
-		}
-
-		for _, org := range orgs {
-			if org.OrganizationId == c.Get("Organization-ID") {
-				return c.Status(200).JSON(&fiber.Map{"message": "User is part of the organization"})
-			}
-		}
-		return c.Status(401).JSON(&ErrorResponse{Message: "User is not part of the organization"})
+		return c.Status(200).JSON(org)
 	})
 	app.Get("/orgs/current", func(c *fiber.Ctx) error{
 		org, err:= GetCurrentOrganization(c)

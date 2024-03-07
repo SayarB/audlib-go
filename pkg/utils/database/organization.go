@@ -23,7 +23,7 @@ func GetUserOrganization(userOrg *models.UserOrganization) error {
 	return config.DB.Where("user_id = ? AND organization_id = ?", userOrg.UserId, userOrg.OrganizationId).First(userOrg).Error
 }
 
-func GetOrganizationsForUser(userId string) ([]models.UserOrganization, error){
+func GetUserOrganizationsForUser(userId string) ([]models.UserOrganization, error){
 	var orgs []models.UserOrganization
 	tx:=config.DB.Where("user_id = ?", userId).Preload("Organization").Find(&orgs)
 	fmt.Println(tx.RowsAffected)
