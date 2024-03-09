@@ -11,7 +11,7 @@ func CreateProject(project *models.Project) error {
 
 func GetProjectById(id string) (*models.Project, error) {
 	project := &models.Project{}
-	err := config.DB.Where("id = ?", id).First(project).Error
+	err := config.DB.Where("id = ?", id).Preload("Versions").First(project).Error
 	return project, err
 }
 func GetProjectsByOrganizationId(id string) ([]models.Project, error) {

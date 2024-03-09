@@ -75,6 +75,30 @@ func ProjectsRoutes(app *fiber.App){
 		}
 		return c.JSON(&projects)
 	})
+	app.Get("/projects/:projectId", func(c *fiber.Ctx) error{
+		isAuthenticated:=c.Locals("isAuthenticated").(bool)
+		if !isAuthenticated{
+			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
+		}
+		org, err:=GetCurrentOrganization(c)
+
+		if err!=nil || org==nil{
+			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid Organization ID"})
+		}
+
+		projectId:=c.Params("projectId")
+
+		project, err:=database.GetProjectById(projectId)
+
+		if err!=nil{
+			return c.Status(500).JSON(&ErrorResponse{Message: "Error fetching project"})
+		}
+		if(project.OwnerId!=org.ID){
+			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized. Not Owned by the Organization"})
+		}
+		return c.JSON(&project)
+	})
+		
 	app.Post("/projects/:projectId/version", func(c *fiber.Ctx) error{
 
 		isAuthenticated:=c.Locals("isAuthenticated").(bool)
