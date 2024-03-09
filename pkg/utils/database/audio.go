@@ -3,11 +3,10 @@ package database
 import (
 	"github.com/sayar/go-streaming/pkg/config"
 	"github.com/sayar/go-streaming/pkg/models"
-	"gorm.io/gorm"
 )
 
-func CreateAudioFile(db *gorm.DB, audio *models.AudioFile) error {
-	err := db.Create(audio).Error
+func CreateAudioFile(audio *models.AudioFile) error {
+	err := config.DB.Create(audio).Error
 	if err != nil {
 		return err
 	}

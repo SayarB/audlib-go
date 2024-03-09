@@ -13,16 +13,30 @@ type Model struct {
 }
 
 type AudioFile struct {
-	Model // This is the primary key
+	Model 
 	BucketId  string 
 	Folder    string 
-	Key       string  `gorm:"primaryKey"`
+	Key       string  `gorm:"unique"`
 	Extension string 
 	File io.Reader `gorm:"-"`
 	Size      int64
 	MIMEType  string
+	AuthorId  string
+	Author   *User
+	Version *Version `gorm:"foreignKey:AudioFileId;references:ID"`
+	
+}
+
+type Version struct{
+	Model
+	Title string
+	AudioFileId string
+	// AudioFile *AudioFile
 	ProjectId string
 	Project   *Project
+	IsPublished bool
+	AuthorId string
+	Author *User
 }
 
 type Project struct{
@@ -30,7 +44,7 @@ type Project struct{
 	Name string
 	OwnerId string
 	Owner *Organization
-	AudioFiles []AudioFile `gorm:"foreignKey:ProjectId;references:ID"`
+	Versions []Version `gorm:"foreignKey:ProjectId;references:ID"`
 }
 type Organization struct{
 	Model
@@ -47,6 +61,8 @@ type User struct{
 	Password string
 	Sessions []Session `gorm:"foreignKey:UserId;references:ID"`
 	Organizations []UserOrganization `gorm:"foreignKey:UserId;references:ID"`
+	AudioFiles []AudioFile `gorm:"foreignKey:AuthorId;references:ID"`
+	Versions []Version `gorm:"foreignKey:AuthorId;references:ID"`
 }
 
 type Session struct{
