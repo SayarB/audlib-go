@@ -33,10 +33,11 @@ func GetProjectsWithLatestVersion(id string) ([]models.ProjectWithLatestVersion,
 			})
 			continue
 		}else{
-			proj.Versions = nil
+			latestVersion:=proj.Versions[len(proj.Versions)-1]
+			proj.Versions=nil
 			projectsWithLatestVersion = append(projectsWithLatestVersion, models.ProjectWithLatestVersion{
 				Project: proj,
-				LatestVersion: &proj.Versions[len(proj.Versions)-1],
+				LatestVersion: &latestVersion,
 			})
 		}
 	}
