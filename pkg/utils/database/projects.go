@@ -19,3 +19,26 @@ func GetProjectsByOrganizationId(id string) ([]models.Project, error) {
 	err := config.DB.Where("owner_id = ?", id).Find(&projects).Error
 	return projects, err
 }
+
+func GetProjectsWithLatestVersion(id string) ([]models.ProjectWithLatestVersion, error) {
+	var projectsWithLatestVersion []models.ProjectWithLatestVersion
+	var projects []models.Project
+	err := config.DB.Where("owner_id = ?", id).Preload("Versions").Find(&projects).Error
+	for _, proj := range projects{
+		if len(proj.Versions) == 0 {
+			proj.Versions = nil
+			projectsWithLatestVersion = append(projectsWithLatestVersion, models.ProjectWithLatestVersion{
+				Project: proj,
+				LatestVersion: nil,
+			})
+			continue
+		}else{
+			proj.Versions = nil
+			projectsWithLatestVersion = append(projectsWithLatestVersion, models.ProjectWithLatestVersion{
+				Project: proj,
+				LatestVersion: &proj.Versions[len(proj.Versions)-1],
+			})
+		}
+	}
+	return projectsWithLatestVersion, err
+}

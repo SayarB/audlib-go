@@ -91,3 +91,9 @@ func (m *Model) BeforeCreate(tx *gorm.DB) (err error) {
 	m.ID = id.String()
 	return
 }
+
+
+type ProjectWithLatestVersion struct{
+	Project
+	LatestVersion *Version
+}
