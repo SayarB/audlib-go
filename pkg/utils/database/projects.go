@@ -11,7 +11,12 @@ func CreateProject(project *models.Project) error {
 
 func GetProjectById(id string) (*models.Project, error) {
 	project := &models.Project{}
-	err := config.DB.Where("id = ?", id).Preload("Versions").First(project).Error
+	err := config.DB.Where("id = ?", id).Preload("Versions.Author").First(project).Error
+
+	for i:= range project.Versions{
+		project.Versions[i].Author.Password=""
+	}
+
 	return project, err
 }
 func GetProjectsByOrganizationId(id string) ([]models.Project, error) {
