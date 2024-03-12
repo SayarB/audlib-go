@@ -13,15 +13,15 @@ import (
 )
 const ChunkSize = 250*1000
 func StreamRoutes(app *fiber.App){
-	app.Post("/stream/:key/token", func(c *fiber.Ctx) error{
-		fmt.Println("Recieved request for File: ", c.Params("key"))
-		key:=c.Params("key")
-		fileInfo,err:=database.GetFileInfo(key)
+	app.Post("/stream/:id/token", func(c *fiber.Ctx) error{
+		fmt.Println("Stream Token Request for Version : ", c.Params("id"))
+		Vid:=c.Params("id")
+		version,err:=database.GetVersionById(Vid)
 		if err!=nil{
 			c.Status(500).JSON(&ErrorResponse{Message: "Could not find audio file in db"})
 		}
 
-		if isPermitted:=utils.HasPermissionToStream(fileInfo); !isPermitted{
+		if isPermitted:=utils.HasPermissionToStream(version); !isPermitted{
 			return c.Status(401).JSON(&ErrorResponse{Message: "No Permissions"})
 		}
 
@@ -29,15 +29,15 @@ func StreamRoutes(app *fiber.App){
 		if err!=nil{
 			c.Status(500).JSON(&ErrorResponse{Message: "Could not find audio file in db"})
 		}
-		token, err:=utils.GenerateStreamToken(fileInfo)
+		token, err:=utils.GenerateStreamToken(version)
 		if err!=nil{
 			c.Status(500).JSON(&ErrorResponse{Message: "Could not generate stream token"})
 		}
 		return c.JSON(&StreamTokenResponse{Token: token})
 	})
 
-	app.Get("/stream/:key", func(c *fiber.Ctx) error{
-		fmt.Println("Recieved request for File: ", c.Params("key"))
+	app.Get("/stream/:id", func(c *fiber.Ctx) error{
+		fmt.Println("Recieved request for File: ", c.Params("id"))
 		r:=c.Get("Range")
 		streamToken:=c.Query("token")
 
@@ -47,14 +47,13 @@ func StreamRoutes(app *fiber.App){
 		}
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if ok {
-			if claims["key"] != c.Params("key") {
+			if claims["vid"] != c.Params("id") {
 				return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized, Stream Token Invalid"})
 			}
 		} else {
 			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized, Stream Token Invalid"})
 		}
 
-		
 		key:= claims["key"].(string)
 		mime:= claims["mime"].(string)
 		bucket:= claims["bucket"].(string)

@@ -6,6 +6,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/sayar/go-streaming/pkg/models"
+	"github.com/sayar/go-streaming/pkg/utils/database"
 )
 
 
@@ -13,8 +14,13 @@ var (
 	streamTokenSecret=[]byte(os.Getenv("STREAM_TOKEN_SECRET"))
 )
 
-func GenerateStreamToken(fileInfo *models.AudioFile ) (string, error) {
+func GenerateStreamToken(version *models.Version ) (string, error) {
+	fileInfo, err := database.GetFileInfo(version.AudioFileId)
+	if err != nil {
+		return "", err
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"vid": version.ID,
 		"key": fileInfo.Key,
 		"mime": fileInfo.MIMEType,
 		"size":fileInfo.Size,

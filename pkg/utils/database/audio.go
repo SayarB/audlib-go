@@ -13,9 +13,9 @@ func CreateAudioFile(audio *models.AudioFile) error {
 	return nil
 }
 
-func GetFileInfo(key string) (*models.AudioFile,error){
+func GetFileInfo(id string) (*models.AudioFile,error){
 	fileInfo:=&models.AudioFile{}
-	db:=config.DB.Where("key = ?", key).Preload("Project").First(fileInfo)
+	db:=config.DB.Where("id = ?", id).First(fileInfo)
 	if db.Error!=nil{
 		return nil, db.Error
 	}

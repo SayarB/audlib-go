@@ -4,6 +4,6 @@ import (
 	"github.com/sayar/go-streaming/pkg/models"
 )
 
-func HasPermissionToStream(fileInfo *models.AudioFile) bool {
+func HasPermissionToStream(fileInfo *models.Version) bool {
 	return true
 }
