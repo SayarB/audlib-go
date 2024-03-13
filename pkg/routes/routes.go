@@ -16,4 +16,5 @@ func SetupRoutes(app *fiber.App){
 	OrganizationRoutes(app)
 	AudioRoutes(app)
 	ProjectsRoutes(app)
+	VersionRoutes(app)
 }

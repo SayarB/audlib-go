@@ -21,3 +21,8 @@ func GetVersionById(versionId string) (*models.Version, error) {
 	err:=config.DB.Where("id = ?", versionId).First(&version).Error
 	return &version,err
 }
+func GetVersionByIdWithProject(versionId string) (*models.Version, error) {
+	var version models.Version
+	err:=config.DB.Preload("Project").Where("id = ?", versionId).First(&version).Error
+	return &version,err
+}

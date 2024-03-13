@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -28,5 +29,5 @@ func main() {
 
 	routes.SetupRoutes(app)
 	
-	log.Fatal(app.Listen(":8000"))
+	log.Fatal(app.Listen(":"+os.Getenv("PORT")))
 }

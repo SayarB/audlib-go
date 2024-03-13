@@ -75,6 +75,9 @@ func AuthMiddleware() fiber.Handler {
 			Name: "audlib",
 			Value: newToken,
 			Expires: time.Now().Add(time.Hour * 24 * 3),
+			HTTPOnly: true,
+			Secure: true,
+			SameSite: "None",
 		})
 
 		// Continue to the next middleware or route handler

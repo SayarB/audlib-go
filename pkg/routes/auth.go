@@ -26,6 +26,9 @@ func SetSessionCookie(c *fiber.Ctx, token string){
 		Name: "audlib",
 		Value: token,
 		Expires: time.Now().Add(time.Hour * 24 * 3),
+		HTTPOnly: true,
+		SameSite: "None",
+		Secure: true,
 	})
 	
 }
