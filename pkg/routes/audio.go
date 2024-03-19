@@ -40,7 +40,12 @@ func AudioRoutes(app *fiber.App){
 		fmt.Print(user.Name)
 
 		fmt.Println("Recieved file")
-		fileHeader, _:=c.FormFile("audioFile")
+		fileHeader, err:=c.FormFile("audioFile")
+
+		if err!=nil{
+			fmt.Println(err)
+			return c.Status(400).JSON(&ErrorResponse{Message: "Could not get file"})
+		}
 
 		fmt.Println(org.ID)
 

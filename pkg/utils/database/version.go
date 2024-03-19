@@ -23,6 +23,6 @@ func GetVersionById(versionId string) (*models.Version, error) {
 }
 func GetVersionByIdWithProject(versionId string) (*models.Version, error) {
 	var version models.Version
-	err:=config.DB.Preload("Project").Where("id = ?", versionId).First(&version).Error
+	err:=config.DB.Preload("Project").Preload("Author").Where("id = ?", versionId).First(&version).Error
 	return &version,err
 }

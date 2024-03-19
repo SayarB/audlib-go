@@ -227,4 +227,39 @@ func ProjectsRoutes(app *fiber.App){
 		}
 		return c.JSON(&version)
 	})
+	app.Delete("/projects/:projectId", func(c *fiber.Ctx) error{
+		isAuthenticated:=c.Locals("isAuthenticated").(bool)
+		if !isAuthenticated{
+			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
+		}
+		org, err:=GetCurrentOrganization(c)
+
+		if err!=nil || org==nil{
+			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid Organization ID"})
+		}
+
+		projectId:=c.Params("projectId")
+
+		if projectId==""{
+			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid Project ID"})
+		}
+
+		project:= &models.Project{}
+
+		project,err=database.GetProjectById(projectId)
+
+		if err!=nil{
+			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid Project ID"})
+		}
+
+		if project.OwnerId!=org.ID{
+			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized. Not Owned by the Organization"})
+		}
+		err=database.DeleteProject(projectId)
+		if err!=nil{
+			fmt.Print(err)
+			return c.Status(500).JSON(&ErrorResponse{Message: "Error deleting project"})
+		}
+		return c.SendStatus(200)
+	})
 }

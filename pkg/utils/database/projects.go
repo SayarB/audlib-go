@@ -48,3 +48,7 @@ func GetProjectsWithLatestVersion(id string) ([]models.ProjectWithLatestVersion,
 	}
 	return projectsWithLatestVersion, err
 }
+
+func DeleteProject(projectId string) error {
+	return config.DB.Where("id = ?", projectId).Delete(&models.Project{}).Error
+}	
