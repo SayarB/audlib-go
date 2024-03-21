@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/sayar/go-streaming/pkg/config"
 	"github.com/sayar/go-streaming/pkg/models"
 	"github.com/sayar/go-streaming/pkg/utils/database"
 )
@@ -226,6 +227,47 @@ func ProjectsRoutes(app *fiber.App){
 			return c.Status(500).JSON(&ErrorResponse{Message: "Error fetching version"})
 		}
 		return c.JSON(&version)
+	})
+	app.Post("/projects/:projectId/versions/:versionId/publish", func(c *fiber.Ctx) error{
+		isAuthenticated:=c.Locals("isAuthenticated").(bool)
+		if !isAuthenticated{
+			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
+		}
+		org, err:=GetCurrentOrganization(c)
+		if err!=nil || org==nil{
+			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid Organization ID"})
+		}
+		project, err:=database.GetProjectById(c.Params("projectId"))
+
+		if err!=nil{
+			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid Organization ID"})
+		}
+
+		if  project.OwnerId!=org.ID{
+			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized. Not Owned by the Organization"})
+		}
+
+		version, err:=database.GetVersionById(c.Params("versionId"))
+		if err!=nil || version.ProjectId!=project.ID{
+			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid Version ID"})
+		}
+
+		publishedVersion, err:=database.GetPublishedVersionByProjectId(project.ID)
+		if err!=nil{
+			return c.Status(500).JSON(&ErrorResponse{Message: "Error publishing version"})
+		}
+
+		if publishedVersion!=nil{
+			publishedVersion.IsPublished=false
+			config.DB.Save(publishedVersion)
+		}
+
+		err=database.PublishVersion(version)
+		if err!=nil{
+			return c.Status(500).JSON(&ErrorResponse{Message: "Error publishing version"})
+		}
+		return c.Status(200).JSON(&version)
+		
 	})
 	app.Delete("/projects/:projectId", func(c *fiber.Ctx) error{
 		isAuthenticated:=c.Locals("isAuthenticated").(bool)

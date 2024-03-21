@@ -26,3 +26,14 @@ func GetVersionByIdWithProject(versionId string) (*models.Version, error) {
 	err:=config.DB.Preload("Project").Preload("Author").Where("id = ?", versionId).First(&version).Error
 	return &version,err
 }
+
+func PublishVersion(version *models.Version) error {
+	version.IsPublished=true
+	return config.DB.Save(version).Error
+}
+
+func GetPublishedVersionByProjectId(projectId string) (*models.Version, error) {
+	var version models.Version
+	err:=config.DB.Where("project_id = ? AND is_published = ?", projectId, true).First(&version).Error
+	return &version,err
+}
