@@ -19,6 +19,9 @@ jobs:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
 
+      - id: "install"
+        run: "gcloud components install app-engine-go"
+
       - id: "deploy"
         uses: "google-github-actions/deploy-appengine@v2"
         env:
