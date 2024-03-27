@@ -37,7 +37,7 @@ func AuthRoutes(app *fiber.App) {
 	app.Get("/auth/check", func(c *fiber.Ctx) error{
 		_, err:= GetAuthenticatedUser(c)
 		if err!=nil{
-			return c.Status(400).JSON(&fiber.Map{"message":"Unauthorized"})
+			return c.Status(401).JSON(&fiber.Map{"message":"Unauthorized"})
 		}
 		return c.SendStatus(200)
 	})

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	s3 "github.com/aws/aws-sdk-go-v2/service/s3"
@@ -93,4 +94,13 @@ func DownloadFileFromS3(file *S3DownloadInput, chunkStart int, chunkEnd int ) (s
 	res, err:=io.ReadAll(result.Body)
 	
 	return string(res), err
+}
+
+func GetPresignedUrl(file *S3DownloadInput) (string, error){
+	fileName:=file.Key + file.Extension
+	presignClient:=s3.NewPresignClient(config.S3Client)
+	req, err:=presignClient.PresignGetObject(context.TODO(),&s3.GetObjectInput{Bucket: &file.BucketId, Key: &fileName}, s3.WithPresignExpires(time.Minute*5))
+
+	return req.URL, err
+
 }

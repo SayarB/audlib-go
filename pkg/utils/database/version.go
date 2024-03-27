@@ -37,3 +37,6 @@ func GetPublishedVersionByProjectId(projectId string) (*models.Version, error) {
 	err:=config.DB.Where("project_id = ? AND is_published = ?", projectId, true).First(&version).Error
 	return &version,err
 }
+func DeleteVersion(version *models.Version) error{
+	return config.DB.Delete(version).Error
+}

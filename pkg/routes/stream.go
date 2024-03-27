@@ -92,7 +92,7 @@ func StreamRoutes(app *fiber.App){
 			endInt=res
 		}
 		
-		actualEnd:=int(math.Min(float64(endInt), float64(size)))
+		actualEnd:=int(math.Min(float64(endInt), float64(size)-1))
 
 		result, err:=utils.DownloadFileFromS3(&utils.S3DownloadInput{Key: key, BucketId: bucket, Extension: extension}, startInt, actualEnd)
 		if err!=nil{
