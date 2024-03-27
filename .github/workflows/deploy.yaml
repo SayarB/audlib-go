@@ -12,8 +12,10 @@ jobs:
         uses: actions/checkout@v2
 
       - id: "auth"
+        name: "Authenticating"
         uses: "google-github-actions/auth@v2"
         with:
+          create_credentials_file: "true"
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
 
