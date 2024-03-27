@@ -252,10 +252,8 @@ func ProjectsRoutes(app *fiber.App){
 			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid Version ID"})
 		}
 
-		publishedVersion, err:=database.GetPublishedVersionByProjectId(project.ID)
-		if err!=nil{
-			return c.Status(500).JSON(&ErrorResponse{Message: "Error publishing version"})
-		}
+		publishedVersion,_:=database.GetPublishedVersionByProjectId(project.ID)
+
 
 		if publishedVersion!=nil{
 			publishedVersion.IsPublished=false
