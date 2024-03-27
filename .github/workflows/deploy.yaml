@@ -21,6 +21,8 @@ jobs:
 
       - id: "deploy"
         uses: "google-github-actions/deploy-appengine@v2"
+        env:
+          CLOUDSDK_APP_CLOUD_BUILD_TIMEOUT: 1800 # 30 minutes
 
       # Example of using the output
       - id: "test"
