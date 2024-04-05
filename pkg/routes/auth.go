@@ -114,6 +114,13 @@ func AuthRoutes(app *fiber.App) {
 		return c.JSON(&user)
 	})
 
+	app.Get("/auth/info", func(c *fiber.Ctx) error {
+		user, err:=GetAuthenticatedUser(c)
+		if err!=nil{
+			return c.Status(401).JSON(&ErrorResponse{Message: "No Authenticated user"})
+		}
+		return c.JSON(&user)
+	})
 	app.Post("/auth/logout", func(c *fiber.Ctx) error {
 		c.ClearCookie("session")
 		return c.SendStatus(200)

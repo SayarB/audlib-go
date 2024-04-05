@@ -57,6 +57,7 @@ type Organization struct{
 type User struct{
 	Model
 	Name string
+	DisplayName string `gorm:"unique"`
 	Email string `gorm:"unique"`
 	Password string
 	Sessions []Session `gorm:"foreignKey:UserId;references:ID"`

@@ -11,7 +11,7 @@ type ErrorResponse struct {
 
 func SetupRoutes(app *fiber.App){
 	StreamRoutes(app)
-	app.Use([]string{"/audio","/project", "/orgs", "/auth/check", "/version"},middlewares.AuthMiddleware())
+	app.Use([]string{"/audio","/project", "/orgs", "/auth/check","/auth/info", "/version"},middlewares.AuthMiddleware())
 	AuthRoutes(app)
 	OrganizationRoutes(app)
 	AudioRoutes(app)
