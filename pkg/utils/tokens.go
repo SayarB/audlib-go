@@ -39,3 +39,18 @@ func ValidateStreamToken(token string) (*jwt.Token, error) {
 	return parsedToken, err
 }
 
+func GenerateMagicLinkToken(email string) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"email": email,
+		"purpose": "magic_link",
+		"exp": time.Now().Add(5*time.Minute).Unix(),
+	})
+	return token.SignedString(streamTokenSecret)
+}
+
+func ValidateMagicLinkToken(token string) (*jwt.Token, error) {
+	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return streamTokenSecret, nil
+	})
+	return parsedToken, err
+}

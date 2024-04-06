@@ -57,13 +57,14 @@ type Organization struct{
 type User struct{
 	Model
 	Name string
-	DisplayName string `gorm:"unique"`
-	Email string `gorm:"unique"`
-	Password string
+	DisplayName string `gorm:"uniqueIndex"`
+	Email string `gorm:"uniqueIndex"`
+	// Password string
 	Sessions []Session `gorm:"foreignKey:UserId;references:ID"`
 	Organizations []UserOrganization `gorm:"foreignKey:UserId;references:ID"`
 	AudioFiles []AudioFile `gorm:"foreignKey:AuthorId;references:ID"`
 	Versions []Version `gorm:"foreignKey:AuthorId;references:ID"`
+	MagicLinks []MagicLink `gorm:"foreignKey:UserId;references:ID"`
 }
 
 type Session struct{
@@ -83,6 +84,13 @@ type UserOrganization struct{
 	OrganizationId string
 	Organization *Organization
 	Role string
+}
+
+type MagicLink struct{
+	Token string
+	UserId string
+	User *User 
+	Used bool
 }
 
 
