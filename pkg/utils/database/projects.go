@@ -21,10 +21,11 @@ func GetProjectsByOrganizationId(id string) ([]models.Project, error) {
 	return projects, err
 }
 
-func GetProjectsWithLatestVersion(id string) ([]models.ProjectWithLatestVersion, error) {
+func GetProjectsWithLatestVersion(id string, limit int) ([]models.ProjectWithLatestVersion, error) {
 	var projectsWithLatestVersion []models.ProjectWithLatestVersion
 	var projects []models.Project
-	err := config.DB.Where("owner_id = ?", id).Preload("Versions").Find(&projects).Error
+	
+	err := config.DB.Where("owner_id = ?", id).Order("id desc").Limit(limit).Preload("Versions").Find(&projects).Error
 	for _, proj := range projects{
 		if len(proj.Versions) == 0 {
 			proj.Versions = nil

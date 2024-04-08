@@ -70,7 +70,9 @@ func ProjectsRoutes(app *fiber.App){
 		if err!=nil || org==nil{
 			return c.Status(400).JSON(&ErrorResponse{Message: "Invalid Organization ID"})
 		}
-		projects,err:=database.GetProjectsWithLatestVersion(org.ID)
+
+		limit:=c.QueryInt("limit",-1)
+		projects,err:=database.GetProjectsWithLatestVersion(org.ID, limit)
 		if err!=nil{
 			return c.Status(500).JSON(&ErrorResponse{Message: "Error fetching projects"})
 		}
