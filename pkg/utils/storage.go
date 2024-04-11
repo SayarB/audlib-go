@@ -104,3 +104,10 @@ func GetPresignedUrl(file *S3DownloadInput) (string, error){
 	return req.URL, err
 
 }
+
+func GetPresignedUploadUrl(bucket string, key string) (string,error){
+	presignClient:=s3.NewPresignClient(config.S3Client)
+	req, err:=presignClient.PresignPutObject(context.TODO(),&s3.PutObjectInput{Bucket: &bucket, Key: &key}, s3.WithPresignExpires(time.Minute*5))
+
+	return req.URL, err
+}
