@@ -1,6 +1,8 @@
 package database
 
 import (
+	"sort"
+
 	"github.com/sayar/go-streaming/pkg/config"
 	"github.com/sayar/go-streaming/pkg/models"
 )
@@ -35,7 +37,16 @@ func GetProjectsWithLatestVersion(id string, limit int) ([]models.ProjectWithLat
 			})
 			continue
 		}else{
+			sort.Slice(proj.Versions, func(i, j int) bool {
+				return proj.Versions[i].CreatedAt.After(proj.Versions[j].CreatedAt)
+			})
 			latestVersion:=proj.Versions[len(proj.Versions)-1]
+			for ver := range(proj.Versions){
+				if proj.Versions[ver].IsPublished {
+					latestVersion = proj.Versions[ver]
+					break
+				}
+			}
 			proj.Versions=nil
 			projectsWithLatestVersion = append(projectsWithLatestVersion, models.ProjectWithLatestVersion{
 				Project: proj,
