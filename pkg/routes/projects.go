@@ -21,7 +21,7 @@ type CreateVersion struct{
 
 func GetAuthenticatedUser(c *fiber.Ctx) (*models.User, error){
 	if c.Locals("user")==nil{
-		return nil, errors.New("Cannot Get User")
+		return nil, errors.New("cannot get user")
 	}
 	user:=c.Locals("user").(*models.User)
 	return user,nil
