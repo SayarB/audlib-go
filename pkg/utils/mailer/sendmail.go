@@ -14,7 +14,7 @@ func SendOnboardingMail(mailId string,token string)  error{
         msg := "From: " + from + "\n" +
             "To: " + to + "\n" +
             "Subject: Verify your Identity\n\n" +
-            "Here is your magic link: http://localhost:3000/login/verify?token="+token+"\n\nDo not Share this link with anyone\n\n\n\n" 
+            "Here is your magic link: https://audio-library-frontend.vercel.app/login/verify?token="+token+"\n\nDo not Share this link with anyone\n\n\n\n" 
     
         err := smtp.SendMail("smtp.gmail.com:587",
             smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
