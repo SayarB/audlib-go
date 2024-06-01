@@ -9,6 +9,10 @@ func GetUserById(userId string, user *models.User) error {
 	return config.DB.Where("id = ?", userId).First(user).Error
 }
 
+func GetUserByClerkId(clerkId string, user *models.User) error {
+	return config.DB.Where("clerk_id = ?", clerkId).First(user).Error
+}
+
 func GetUserByEmail(email string, user *models.User) error {
 	return config.DB.Preload("Organizations.Organization").Where("email = ?", email).First(user).Error
 }

@@ -11,6 +11,10 @@ func GetOrganizationById(orgId *string, org *models.Organization) error {
 	return config.DB.Where("id = ?", orgId).First(org).Error
 }
 
+func GetOrganizationByClerkId(clerkId string, org *models.Organization) error {
+	return config.DB.Where("clerk_id = ?", clerkId).First(org).Error
+}
+
 func CreateOrganization(org *models.Organization) error {
 	return config.DB.Create(org).Error
 }
@@ -23,16 +27,16 @@ func GetUserOrganization(userOrg *models.UserOrganization) error {
 	return config.DB.Where("user_id = ? AND organization_id = ?", userOrg.UserId, userOrg.OrganizationId).First(userOrg).Error
 }
 
-func GetUserOrganizationsForUser(userId string) ([]models.UserOrganization, error){
+func GetUserOrganizationsForUser(userId string) ([]models.UserOrganization, error) {
 	var orgs []models.UserOrganization
-	tx:=config.DB.Where("user_id = ?", userId).Preload("Organization").Find(&orgs)
+	tx := config.DB.Where("user_id = ?", userId).Preload("Organization").Find(&orgs)
 	fmt.Println(tx.RowsAffected)
 
 	return orgs, tx.Error
 }
 
-func ChangeOrganization(token string, orgId string) error{
-	tx:=config.DB.Table("sessions").Where("token = ?", token).Update("organization_id", orgId)
+func ChangeOrganization(token string, orgId string) error {
+	tx := config.DB.Table("sessions").Where("token = ?", token).Update("organization_id", orgId)
 
 	return tx.Error
 }
