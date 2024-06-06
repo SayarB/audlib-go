@@ -17,7 +17,7 @@ func init() {
 
 	_, err := os.Open(".env")
 
-	if err == nil && os.IsNotExist(err) {
+	if !(err != nil && os.IsNotExist(err)) {
 		err := godotenv.Load(".env")
 		if err != nil {
 			panic("env cannot be loaded")
@@ -25,7 +25,8 @@ func init() {
 	}
 	_, err = config.ConnectToDatabase()
 	if err != nil {
-		fmt.Printf("Error connecting to database: %v", err)
+		panic(fmt.Sprintf("Error connecting to database: %v", err))
+
 	}
 	config.ConfigureS3Client()
 }
