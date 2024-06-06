@@ -14,9 +14,14 @@ import (
 )
 
 func init() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		panic("env cannot be loaded")
+
+	_, err := os.Open(".env")
+
+	if err == nil && os.IsNotExist(err) {
+		err := godotenv.Load(".env")
+		if err != nil {
+			panic("env cannot be loaded")
+		}
 	}
 	_, err = config.ConnectToDatabase()
 	if err != nil {
