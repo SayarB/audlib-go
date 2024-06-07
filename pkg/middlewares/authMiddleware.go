@@ -87,6 +87,7 @@ func AuthMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
 		//get cookies from context
+		fmt.Println(c.Path())
 
 		claims, ok := clerk.SessionClaimsFromContext(c.Context())
 

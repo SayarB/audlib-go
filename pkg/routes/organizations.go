@@ -8,14 +8,14 @@ import (
 	"github.com/sayar/go-streaming/pkg/utils/database"
 )
 
-type OrgChangeRequest struct{
+type OrgChangeRequest struct {
 	OrganizationId string `json:"organizationId"`
 }
 
 func OrganizationRoutes(app *fiber.App) {
 	app.Get("/orgs", func(c *fiber.Ctx) error {
-		user, err:= GetAuthenticatedUser(c)
-		if err!=nil{
+		user, err := GetAuthenticatedUser(c)
+		if err != nil {
 			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
 		}
 
@@ -23,7 +23,7 @@ func OrganizationRoutes(app *fiber.App) {
 
 		orgs, err = database.GetUserOrganizationsForUser(user.ID)
 
-		if err!=nil{
+		if err != nil {
 			return c.Status(500).JSON(&ErrorResponse{Message: "Error fetching organizations"})
 		}
 
@@ -32,8 +32,8 @@ func OrganizationRoutes(app *fiber.App) {
 		return c.JSON(orgs)
 	})
 	app.Get("/orgs/check", func(c *fiber.Ctx) error {
-		org, err:= GetCurrentOrganization(c)
-		if err!=nil{
+		org, err := GetCurrentOrganization(c)
+		if err != nil {
 			return c.Status(400).JSON(&ErrorResponse{Message: "no organization selected"})
 		}
 		return c.Status(200).JSON(org)
@@ -45,29 +45,8 @@ func OrganizationRoutes(app *fiber.App) {
 		}
 		return c.Status(200).JSON(org)
 	})
-	app.Post("/orgs/select", func(c *fiber.Ctx) error {
+	// app.Post("/orgs/select", func(c *fiber.Ctx) error {
 
-		token:=c.Cookies("audlib")
-
-		body:=&OrgChangeRequest{}
-		err:=c.BodyParser(body)
-
-		if err!=nil{
-			return c.Status(400).JSON(&ErrorResponse{Message: "organization ID is not provided"})
-		}
-
-		fmt.Println("Token: ", token)
-		if token==""{
-			return c.Status(400).JSON(&ErrorResponse{Message: "token not provided"})
-		}
-
-		fmt.Println("OrganizationId sent = ", body.OrganizationId)
-
-		err=database.ChangeOrganization(token, body.OrganizationId)
-		if err!=nil{
-			fmt.Println(err)
-			return c.Status(500).JSON(&ErrorResponse{Message: "cannot change organization"})
-		}
-		return c.SendStatus(200)
-	})
+		
+	// })
 }
