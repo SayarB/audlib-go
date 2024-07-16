@@ -92,7 +92,7 @@ func StreamRoutes(app *fiber.App) {
 			endInt = res
 		}
 
-		actualEnd := int(math.Min(float64(endInt), float64(size)))
+		actualEnd := int(math.Min(float64(endInt), float64(size-1)))
 
 		result, err := utils.DownloadFileFromS3(&utils.S3DownloadInput{Key: key, BucketId: bucket, Extension: extension}, startInt, actualEnd)
 		if err != nil {
@@ -103,7 +103,6 @@ func StreamRoutes(app *fiber.App) {
 		c.Set("Content-Length", fmt.Sprintf("%d", len(result)))
 		c.Set("Accept-Ranges", "bytes")
 		c.Set("Content-Range", fmt.Sprintf("bytes %d-%d/%d", startInt, actualEnd, size))
-		
 
 		return c.Status(206).SendString(result)
 	})
