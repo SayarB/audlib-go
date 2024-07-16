@@ -35,7 +35,7 @@ func main() {
 	clerk.SetKey(os.Getenv("CLERK_SECRET_KEY"))
 	app := fiber.New(fiber.Config{DisablePreParseMultipartForm: true, StreamRequestBody: true})
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "https://audio-library-frontend.vercel.app,http://localhost:3000",
+		AllowOrigins:     os.Getenv("CORS_ORIGIN"),
 		AllowCredentials: true,
 	}))
 
