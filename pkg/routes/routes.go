@@ -1,10 +1,14 @@
 package routes
 
 import (
+	"fmt"
+
 	clerkhttp "github.com/clerk/clerk-sdk-go/v2/http"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
+	"github.com/sayar/go-streaming/pkg/config"
 	"github.com/sayar/go-streaming/pkg/middlewares"
+	"github.com/sayar/go-streaming/pkg/models"
 )
 
 type ErrorResponse struct {
@@ -12,6 +16,12 @@ type ErrorResponse struct {
 }
 
 func SetupRoutes(app *fiber.App) {
+	app.Get("/handle-cron", func(c *fiber.Ctx) error {
+		var count int64
+		config.DB.Model(&models.User{}).Count(&count)
+		fmt.Println(count)
+		return c.SendStatus(200)
+	})
 	StreamRoutes(app)
 	app.Use([]string{"/audio", "/projects", "/orgs", "/auth/onboard", "/auth/info", "/version"}, adaptor.HTTPMiddleware(clerkhttp.RequireHeaderAuthorization()))
 	app.Use([]string{"/audio", "/projects", "/orgs", "/auth/check", "/auth/info", "/version"}, middlewares.AuthMiddleware())
