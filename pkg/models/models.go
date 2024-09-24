@@ -25,11 +25,25 @@ type AudioFile struct {
 	Author    *User
 	Version   *Version `gorm:"foreignKey:AudioFileId;references:ID"`
 }
+type ProjectFile struct {
+	Model
+	BucketId  string
+	Folder    string
+	Key       string `gorm:"unique"`
+	Extension string
+	File      io.Reader `gorm:"-"`
+	Size      int64
+	MIMEType  string
+	AuthorId  string
+	Author    *User
+	Version   *Version `gorm:"foreignKey:ProjectFileId;references:ID"`
+}
 
 type Version struct {
 	Model
-	Title       string
-	AudioFileId string
+	Title         string
+	AudioFileId   string
+	ProjectFileId string
 	// AudioFile *AudioFile
 	ProjectId   string
 	Project     *Project

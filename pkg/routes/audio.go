@@ -12,42 +12,42 @@ import (
 	"github.com/sayar/go-streaming/pkg/utils/database"
 )
 
-type StreamTokenResponse struct{
+type StreamTokenResponse struct {
 	Token string `json:"token"`
 }
 
-type AudioPostRequest struct{
+type FilePostRequest struct {
 	Filename string `json:"filename"`
-	Size int64 `json:"size"`
-	MIME string `json:"mime"`
-	Key string `json:"key"`
+	Size     int64  `json:"size"`
+	MIME     string `json:"mime"`
+	Key      string `json:"key"`
 }
 
-func AudioRoutes(app *fiber.App){
-	app.Get("/audio/upload", func(c *fiber.Ctx) error{
-		fileName:=c.Query("filename")
-		isAuthenticated:=c.Locals("isAuthenticated").(bool)
-		if !isAuthenticated{
+func AudioRoutes(app *fiber.App) {
+	app.Get("/audio/upload", func(c *fiber.Ctx) error {
+		fileName := c.Query("filename")
+		isAuthenticated := c.Locals("isAuthenticated").(bool)
+		if !isAuthenticated {
 			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
 		}
-		key,err:=uuid.NewV7()
-		if err!=nil{
+		key, err := uuid.NewV7()
+		if err != nil {
 			return c.Status(500).JSON(&ErrorResponse{Message: "Could not generate key"})
 		}
-		url, err:=utils.GetPresignedUploadUrl("sayarsbucket",key.String()+path.Ext(fileName))
-		if err!=nil{
+		url, err := utils.GetPresignedUploadUrl("sayarsbucket", key.String()+path.Ext(fileName))
+		if err != nil {
 			return c.Status(500).JSON(&ErrorResponse{Message: "Could not generate presigned URL"})
 		}
-		return c.Status(200).JSON(&fiber.Map{"url":url,"key":key.String()})
+		return c.Status(200).JSON(&fiber.Map{"url": url, "key": key.String()})
 	})
-	app.Post("/audio", func(c *fiber.Ctx) error{
+	app.Post("/audiofile", func(c *fiber.Ctx) error {
 
-		isAuthenticated:=c.Locals("isAuthenticated").(bool)
-		if !isAuthenticated{
+		isAuthenticated := c.Locals("isAuthenticated").(bool)
+		if !isAuthenticated {
 			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
 		}
-		user,err:=GetAuthenticatedUser(c)
-		if err!=nil{
+		user, err := GetAuthenticatedUser(c)
+		if err != nil {
 			fmt.Println("Cannot Authenticate User")
 			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
 		}
@@ -57,28 +57,61 @@ func AudioRoutes(app *fiber.App){
 		fmt.Println("Recieved file")
 		// fileHeader, err:=c.FormFile("audioFile")
 
-		fileHeader := &AudioPostRequest{}
-		err =c.BodyParser(fileHeader)
+		fileHeader := &FilePostRequest{}
+		err = c.BodyParser(fileHeader)
 
-		if err!=nil{
+		if err != nil {
 			fmt.Println(err)
 			return c.Status(400).JSON(&ErrorResponse{Message: "Could not get file"})
 		}
 
-		audioFile:=models.AudioFile{
-			Key: fileHeader.Key,
-			Folder: "audio",
-			Size: fileHeader.Size,
+		audioFile := models.AudioFile{
+			Key:       fileHeader.Key,
+			Folder:    "audio",
+			Size:      fileHeader.Size,
 			Extension: path.Ext(fileHeader.Filename),
-			BucketId: "sayarsbucket",
-			MIMEType: fileHeader.MIME,
-			AuthorId: user.ID,
+			BucketId:  "sayarsbucket",
+			MIMEType:  fileHeader.MIME,
+			AuthorId:  user.ID,
 		}
-		err=database.CreateAudioFile(&audioFile)
-		if err!=nil{
+		err = database.CreateAudioFile(&audioFile)
+		if err != nil {
 			return c.Status(500).JSON(&ErrorResponse{Message: "Could not create audio file"})
 		}
 		return c.Status(201).JSON(&audioFile)
+	})
+	app.Post("/projectfile", func(c *fiber.Ctx) error {
+		isAuthenticated := c.Locals("isAuthenticated").(bool)
+		if !isAuthenticated {
+			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
+		}
+		user, err := GetAuthenticatedUser(c)
+		if err != nil {
+			fmt.Println("Cannot Authenticate User")
+			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
+		}
+		fmt.Println("Recieved file")
+		// fileHeader, err:=c.FormFile("audioFile")
+		fileHeader := &FilePostRequest{}
+		err = c.BodyParser(fileHeader)
+		if err != nil {
+			fmt.Println(err)
+			return c.Status(400).JSON(&ErrorResponse{Message: "Could not get file"})
+		}
+		projectFile := models.ProjectFile{
+			Key:       fileHeader.Key,
+			Folder:    "project",
+			Size:      fileHeader.Size,
+			Extension: path.Ext(fileHeader.Filename),
+			BucketId:  "sayarsbucket",
+			MIMEType:  fileHeader.MIME,
+			AuthorId:  user.ID,
+		}
+		err = database.CreateProjectFile(&projectFile)
+		if err != nil {
+			return c.Status(500).JSON(&ErrorResponse{Message: "Could not create project file"})
+		}
+		return c.Status(201).JSON(&projectFile)
 	})
 }
 
@@ -96,8 +129,6 @@ func AudioRoutes(app *fiber.App){
 // 	"github.com/sayar/go-streaming/pkg/utils"
 // 	"github.com/sayar/go-streaming/pkg/utils/database"
 // )
-
-
 
 // type StreamTokenResponse struct{
 // 	Token string `json:"token"`

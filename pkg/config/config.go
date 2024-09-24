@@ -28,7 +28,7 @@ func ConnectToDatabase() (*gorm.DB, error) {
 		return nil, err
 	}
 	fmt.Println("Connected to database")
-	db.AutoMigrate(&models.AudioFile{}, &models.Organization{}, &models.User{}, &models.Project{}, &models.Session{}, models.UserOrganization{}, &models.Version{})
+	db.AutoMigrate(&models.ProjectFile{}, &models.AudioFile{}, &models.Organization{}, &models.User{}, &models.Project{}, &models.Session{}, models.UserOrganization{}, &models.Version{})
 	fmt.Println("Migrated")
 	return db, nil
 }

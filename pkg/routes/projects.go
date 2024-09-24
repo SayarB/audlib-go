@@ -15,8 +15,9 @@ type PostProjectRequest struct {
 }
 
 type CreateVersion struct {
-	Title       string `json:"title"`
-	AudioFileId string `json:"audioFileId"`
+	Title         string `json:"title"`
+	AudioFileId   string `json:"audioFileId"`
+	ProjectFileId string `json:"projectFileId"`
 }
 
 func GetAuthenticatedUser(c *fiber.Ctx) (*models.User, error) {
@@ -144,11 +145,12 @@ func ProjectsRoutes(app *fiber.App) {
 		}
 
 		version := &models.Version{
-			Title:       body.Title,
-			AudioFileId: body.AudioFileId,
-			IsPublished: false,
-			AuthorId:    user.ID,
-			ProjectId:   projectId,
+			Title:         body.Title,
+			AudioFileId:   body.AudioFileId,
+			ProjectFileId: body.ProjectFileId,
+			IsPublished:   false,
+			AuthorId:      user.ID,
+			ProjectId:     projectId,
 		}
 
 		err = database.CreateVersion(version)
