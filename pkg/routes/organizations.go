@@ -72,7 +72,7 @@ func OrganizationRoutes(app *fiber.App) {
 
 		err = database.CreateOrganization(newOrg)
 		if err != nil {
-			fmt.Printf("could not create ")
+			fmt.Printf("could not create")
 		}
 
 		userOrg := &models.UserOrganization{
@@ -85,6 +85,6 @@ func OrganizationRoutes(app *fiber.App) {
 			fmt.Printf("could not create user org")
 		}
 
-		return c.Status(200).JSON(&fiber.Map{"message": "Organization created successfully"})
+		return c.Status(201).JSON(&fiber.Map{"message": "Organization created successfully", "clerk_id": newOrg.ClerkId})
 	})
 }
