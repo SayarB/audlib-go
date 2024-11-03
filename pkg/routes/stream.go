@@ -44,14 +44,17 @@ func StreamRoutes(app *fiber.App) {
 
 		token, err := utils.ValidateStreamToken(streamToken)
 		if err != nil {
+			fmt.Println("Stream Token signature issue")
 			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized, Stream Token Invalid"})
 		}
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if ok {
 			if claims["vid"] != c.Params("id") {
+				fmt.Println("id does not match")
 				return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized, Stream Token Invalid"})
 			}
 		} else {
+			fmt.Println("Wrong format of Claims")
 			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized, Stream Token Invalid"})
 		}
 
