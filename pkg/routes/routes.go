@@ -22,6 +22,7 @@ func SetupRoutes(app *fiber.App) {
 		fmt.Println(count)
 		return c.SendStatus(200)
 	})
+	PublicRoutes(app)
 	StreamRoutes(app)
 	app.Use([]string{"/audio", "/projects", "/orgs", "/auth/onboard", "/auth/info", "/version", "/projectfile"}, adaptor.HTTPMiddleware(clerkhttp.RequireHeaderAuthorization()))
 	app.Use([]string{"/audio", "/projects", "/orgs", "/auth/check", "/auth/info", "/version", "/projectfile"}, middlewares.AuthMiddleware())
