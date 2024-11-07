@@ -40,3 +40,11 @@ func ChangeOrganization(token string, orgId string) error {
 
 	return tx.Error
 }
+
+func DeleteUserOrganization(userOrgId string) error {
+	return config.DB.Where("id = ?", userOrgId).Delete(&models.UserOrganization{}).Error
+}
+
+func DeleteOrganization(orgId string) error {
+	return config.DB.Where("id = ?", orgId).Delete(&models.Organization{}).Error
+}

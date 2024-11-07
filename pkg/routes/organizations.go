@@ -1,8 +1,10 @@
 package routes
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/clerk/clerk-sdk-go/v2/organization"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sayar/go-streaming/pkg/models"
 	clerkutils "github.com/sayar/go-streaming/pkg/utils/clerk"
@@ -86,5 +88,42 @@ func OrganizationRoutes(app *fiber.App) {
 		}
 
 		return c.Status(201).JSON(&fiber.Map{"message": "Organization created successfully", "clerk_id": newOrg.ClerkId})
+	})
+	app.Delete("/orgs/:orgId", func(c *fiber.Ctx) error {
+		user, err := GetAuthenticatedUser(c)
+		if err != nil {
+			return c.Status(401).JSON(&ErrorResponse{Message: "Unauthorized"})
+		}
+		orgId := c.Params("orgId")
+		org := &models.Organization{}
+		err = database.GetOrganizationById(&orgId, org)
+		if err != nil {
+			return c.Status(404).JSON(&ErrorResponse{Message: "Organization not found"})
+		}
+
+		userOrg := &models.UserOrganization{
+			UserId:         user.ID,
+			OrganizationId: org.ID,
+		}
+		err = database.GetUserOrganization(userOrg)
+		if err != nil {
+			return c.Status(404).JSON(&ErrorResponse{Message: "User not part of the organization"})
+		}
+		_, err = organization.Delete(context.Background(), org.ClerkId)
+		if err != nil {
+			fmt.Println("not able to delete from clerk")
+			return c.Status(500).JSON(&ErrorResponse{Message: "Error deleting organization"})
+		}
+		err = database.DeleteUserOrganization(userOrg.ID)
+		if err != nil {
+			fmt.Printf("deleted from clerk but user-org not deleted from db : %s", userOrg.ID)
+			return c.Status(500).JSON(&ErrorResponse{Message: "Error deleting user organization"})
+		}
+		err = database.DeleteOrganization(org.ID)
+		if err != nil {
+			return c.Status(500).JSON(&ErrorResponse{Message: "Error deleting organization"})
+		}
+
+		return c.Status(200).JSON(&fiber.Map{"message": "Organization deleted successfully"})
 	})
 }
